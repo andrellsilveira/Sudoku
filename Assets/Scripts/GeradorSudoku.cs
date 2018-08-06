@@ -4,10 +4,18 @@ using UnityEngine;
 
 public class GeradorSudoku : MonoBehaviour {
 
-    [SerializeField] int TotalLinhas = 9;
-    [SerializeField] int TotalColunas = 9;
+    #region Variáveis Públicas
+    [SerializeField] readonly int TotalLinhas = 9;
+    [SerializeField] readonly int TotalColunas = 9;
+    [SerializeField] GameObject Celulas;
+    [SerializeField] GameObject Celula;
+    #endregion
+
+    #region Variáveis Privadas
     private int[,] _sudoku;
     private int[] _numeros;
+    private GameObject[,] _celulas;
+    #endregion
 
 
     [SerializeField]
@@ -23,22 +31,68 @@ public class GeradorSudoku : MonoBehaviour {
 
 
 
-    // Use this for initialization
     void Start () {
         GerarSudoku();
-	}
+    }
 
+    /// <summary>
+    /// Executa as chamada aos métodos para inicialização e geração do jogo
+    /// </summary>
     public void GerarSudoku()
     {
+        // * Inicializa os arrays
         _sudoku = new int[TotalLinhas, TotalColunas];
+        _celulas = new GameObject[TotalLinhas, TotalColunas];
         _numeros = new int[TotalLinhas];
 
         //_sudoku = TESTE;
 
+        MapearTabuleiro();
         IniciarNumeros();
         IniciarSudoku();
         PopularSudoku();
         ImprimirSudoku();
+    }
+
+    /// <summary>
+    /// Mapeia o tabuleiro do jogo com as imagens
+    /// </summary>
+    void MapearTabuleiro()
+    {
+        // * Recupera a largura do sprite
+        float _larguraCelula = Celula.GetComponent<SpriteRenderer>().bounds.size.x;
+        // * Recupera a altura do sprite
+        float _alturaCelula = Celula.GetComponent<SpriteRenderer>().bounds.size.y;
+        // * Define o ponto de spawn inicial no eixo X
+        float _pontoSpawnX = Celulas.transform.position.x - (TotalColunas / 2) * _larguraCelula;
+        float _pontoSpawnXInicial = _pontoSpawnX;
+        // * Define o ponto de spawn inicial no eixo Y
+        float _pontoSpawnY = Celulas.transform.position.y + (TotalLinhas / 2) * _alturaCelula;
+
+        for (int _linha = 0; _linha < TotalLinhas; _linha++)
+        {
+            for (int _coluna = 0; _coluna < TotalColunas; _coluna++)
+            {
+                // * Instância o GameObject Celula (Prefab)
+                GameObject _celula = Instantiate(Celula) as GameObject;
+                // * Adiciona ao GameObject pai Celulas
+                _celula.transform.parent = Celulas.transform;
+                // * Define o posicionamento dentro do objeto pai de acordo com as coordenadas
+                _celula.transform.position = new Vector2(_pontoSpawnX, _pontoSpawnY);
+                // * Renomeia o GameObject
+                _celula.transform.name = "Celula_" + _linha.ToString() + "_" + _coluna.ToString();
+                // * Recupera o componente script para definição dos números da linha e coluna da célula
+                _celula.GetComponent<Celula>().Linha = _linha;
+                _celula.GetComponent<Celula>().Coluna = _coluna;
+
+                // * Adiciona o GameObject a um array para utlização posterior
+                _celulas[_linha, _coluna] = _celula;
+
+                _pontoSpawnX += _larguraCelula;
+            }
+            _pontoSpawnY -= _alturaCelula;
+            _pontoSpawnX = _pontoSpawnXInicial;
+        }
     }
 
     /// <summary>
@@ -124,14 +178,12 @@ public class GeradorSudoku : MonoBehaviour {
     /// <param name="_coluna">Número da coluna da célula</param>
     bool PreencherCelula(int _linha, int _coluna)
     {
-        //System.Random _random = new System.Random();
-        //_numeros = _numeros.OrderBy(x => _random.Next()).ToArray();
-
         for (int _indice = 0; _indice < _numeros.Length; _indice++)
         {
             if (!VerificarLinha(_numeros[_indice], _linha) && !VerificarColuna(_numeros[_indice], _coluna) && !VerificarQuadrante(_numeros[_indice], _linha, _coluna))
             {
                 _sudoku[_linha, _coluna] = _numeros[_indice];
+                _celulas[_linha, _coluna].GetComponent<Celula>().Numero = _numeros[_indice];
                 return true;
             }
         }
