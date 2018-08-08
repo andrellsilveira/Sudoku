@@ -149,6 +149,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1366998818}
+  - component: {fileID: 1366998819}
   - component: {fileID: 1366998817}
   m_Layer: 0
   m_Name: Controlador
@@ -168,8 +169,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78517ffa83fa19e48a3eff30105ba256, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TotalLinhas: 9
-  TotalColunas: 9
   Celulas: {fileID: 1007228184}
   Celula: {fileID: 1249205969716398, guid: 5488d8388c2d6b040a6c7db5bb0b419f, type: 2}
 --- !u!4 &1366998818
@@ -185,6 +184,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1366998819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1366998816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b67ada54f8e47b44b9f4ffc83038c8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2140082824
 GameObject:
   m_ObjectHideFlags: 0
