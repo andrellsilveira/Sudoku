@@ -4,17 +4,30 @@ using UnityEngine;
 
 public class Controlador : MonoBehaviour
 {
+    #region Variáveis Privadas
+    private int _totalCelulasSelecionadas = 0;
+    private GameObject[] _celulas;
+    private GeradorSudoku _geradorSudoku;
+    #endregion
 
     // Use this for initialization
     void Start()
     {
-
+        _geradorSudoku = FindObjectOfType(typeof(GeradorSudoku)) as GeradorSudoku;
+        _celulas = new GameObject[2];
     }
 
     // Update is called once per frame
     void Update()
     {
-        SelecionarCelula();
+        if (_totalCelulasSelecionadas < 2)
+        {
+            SelecionarCelula();
+        }
+        else
+        {
+            StartCoroutine(ExecutarTroca());
+        }
     }
 
     void SelecionarCelula()
@@ -41,10 +54,22 @@ public class Controlador : MonoBehaviour
         if (_hit)
         {
             if (_hit.collider.CompareTag("Celula"))
-            {
+            {                
                 Debug.Log("Selecionada célula " + _hit.transform.name);
+                _hit.collider.gameObject.SendMessage("Selecionar");
+                _celulas[_totalCelulasSelecionadas] = _hit.collider.gameObject;
+                _totalCelulasSelecionadas++;
             }
         }
+    }
 
+    IEnumerator ExecutarTroca()
+    {
+        for (int _indice = 0; _indice < _celulas.Length; _indice++)
+        {
+            _celulas[_indice].SendMessage("Selecionar");
+        }
+        _totalCelulasSelecionadas = 0;
+        yield return new WaitForSeconds(1f);
     }
 }
