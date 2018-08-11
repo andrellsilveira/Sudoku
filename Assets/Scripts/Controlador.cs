@@ -58,9 +58,42 @@ public class Controlador : MonoBehaviour
                 Debug.Log("Selecionada célula " + _hit.transform.name);
                 _hit.collider.gameObject.SendMessage("Selecionar");
                 _celulas[_totalCelulasSelecionadas] = _hit.collider.gameObject;
+                StartCoroutine(DesabilitarCelulas(_hit.collider.gameObject));
                 _totalCelulasSelecionadas++;
             }
         }
+    }
+
+    IEnumerator DesabilitarCelulas(GameObject _celula)
+    {
+        for (int _linha = 0; _linha < _geradorSudoku.TotalLinhas; _linha++)
+        {
+            for (int _coluna = 0; _coluna < _geradorSudoku.TotalColunas; _coluna++)
+            {
+                Celula _scriptCelula = _geradorSudoku.ListaCelulas[_linha, _coluna].gameObject.GetComponent<Celula>();
+                /** TODO *
+                 Deixar habilitadas somente as 4 células nas direções norte, sul, leste e oeste da célula selecionada
+                 */
+                if (
+                    (_scriptCelula.Linha == _celula.GetComponent<Celula>().Linha - 1 && _scriptCelula.Coluna == _celula.GetComponent<Celula>().Coluna) ||
+                    (_scriptCelula.Linha == _celula.GetComponent<Celula>().Linha + 1 && _scriptCelula.Coluna == _celula.GetComponent<Celula>().Coluna) ||
+                    (_scriptCelula.Linha == _celula.GetComponent<Celula>().Linha && _scriptCelula.Coluna == _celula.GetComponent<Celula>().Coluna - 1) ||
+                    (_scriptCelula.Linha == _celula.GetComponent<Celula>().Linha && _scriptCelula.Coluna == _celula.GetComponent<Celula>().Coluna + 1)
+                    ) {
+                    _geradorSudoku.ListaCelulas[_linha, _coluna].gameObject.GetComponent<BoxCollider2D>().enabled = true;
+                    _scriptCelula.Alternativa();
+                }
+                else
+                {
+                    _geradorSudoku.ListaCelulas[_linha, _coluna].gameObject.GetComponent<BoxCollider2D>().enabled = false;
+                }
+
+                
+                //print(_geradorSudoku.ListaCelulas[_linha, _coluna].gameObject.GetComponent<Celula>().Linha +" - "+ _geradorSudoku.ListaCelulas[_linha, _coluna].gameObject.GetComponent<Celula>().Coluna);
+            }
+        }
+
+        yield return null; 
     }
 
     IEnumerator ExecutarTroca()

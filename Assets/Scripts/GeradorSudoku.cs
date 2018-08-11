@@ -5,16 +5,16 @@ using UnityEngine;
 public class GeradorSudoku : MonoBehaviour {
 
     #region Variáveis Públicas
-    [SerializeField] readonly int TotalLinhas = 9;
-    [SerializeField] readonly int TotalColunas = 9;
+    public readonly int TotalLinhas = 9;
+    public readonly int TotalColunas = 9;
     [SerializeField] GameObject Celulas;
     [SerializeField] GameObject Celula;
+    public GameObject[,] ListaCelulas { get; set; }
     #endregion
 
     #region Variáveis Privadas
     private int[,] _sudoku;
     private int[] _numeros;
-    private GameObject[,] _celulas;
     #endregion
 
 
@@ -42,7 +42,7 @@ public class GeradorSudoku : MonoBehaviour {
     {
         // * Inicializa os arrays
         _sudoku = new int[TotalLinhas, TotalColunas];
-        _celulas = new GameObject[TotalLinhas, TotalColunas];
+        ListaCelulas = new GameObject[TotalLinhas, TotalColunas];
         _numeros = new int[TotalLinhas];
 
         //_sudoku = TESTE;
@@ -86,7 +86,7 @@ public class GeradorSudoku : MonoBehaviour {
                 _celula.GetComponent<Celula>().Coluna = _coluna;
 
                 // * Adiciona o GameObject a um array para utlização posterior
-                _celulas[_linha, _coluna] = _celula;
+                ListaCelulas[_linha, _coluna] = _celula;
 
                 _pontoSpawnX += _larguraCelula;
             }
@@ -183,7 +183,7 @@ public class GeradorSudoku : MonoBehaviour {
             if (!VerificarLinha(_numeros[_indice], _linha) && !VerificarColuna(_numeros[_indice], _coluna) && !VerificarQuadrante(_numeros[_indice], _linha, _coluna))
             {
                 _sudoku[_linha, _coluna] = _numeros[_indice];
-                _celulas[_linha, _coluna].GetComponent<Celula>().Numero = _numeros[_indice];
+                ListaCelulas[_linha, _coluna].GetComponent<Celula>().Numero = _numeros[_indice];
                 return true;
             }
         }

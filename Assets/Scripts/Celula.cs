@@ -39,13 +39,19 @@ public class Celula : MonoBehaviour {
         }
 	}
 
-    void Selecionar()
+    public void Selecionar()
     {
         _selecionada = !_selecionada;
         _animacao = (_selecionada) ? (int)Animacao.Selecionada : (int)Animacao.Normal;
     }
 
-    private void OnTriggerEnter2D(Collider2D _collision)
+    public void Alternativa()
+    {
+        _alternativa = !_alternativa;
+        _animacao = (_alternativa) ? (int)Animacao.Alternativa : (int)Animacao.Normal;
+    }
+
+    /*private void OnTriggerEnter2D(Collider2D _collision)
     {
         if (_collision.CompareTag("Celula"))
         {
@@ -58,5 +64,5 @@ public class Celula : MonoBehaviour {
     {
         _alternativa = false;
         _animacao = (int)Animacao.Normal;
-    }
+    }*/
 }
