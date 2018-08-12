@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Animacao
+public enum Estado
 {
     Normal = 0,
     Selecionada = 1,
@@ -19,7 +19,7 @@ public class Celula : MonoBehaviour {
 
     #region Variáveis Privadas
     private Animator _animator;
-    private int _animacao = (int)Animacao.Normal;
+    private int _estado = (int)Estado.Normal;
     private bool _selecionada = false;
     private bool _alternativa = false;
     #endregion
@@ -29,40 +29,37 @@ public class Celula : MonoBehaviour {
 	}
 	
 	void Update () {
-        _animator.SetInteger("_animacao", _animacao);
-
-        CircleCollider2D[] _colliders = GetComponents<CircleCollider2D>();
-
-        foreach (CircleCollider2D _collider in _colliders)
-        {
-            _collider.enabled = _selecionada;
-        }
+        // * Define a animação de estado para a célula
+        _animator.SetInteger("_estado", _estado);
 	}
 
-    public void Selecionar()
+    /// <summary>
+    /// Define o estado da célula como selecionada
+    /// </summary>
+    public void Selecionada()
     {
-        _selecionada = !_selecionada;
-        _animacao = (_selecionada) ? (int)Animacao.Selecionada : (int)Animacao.Normal;
+        _selecionada = true;
+        _alternativa = false;
+        _estado = (int)Estado.Selecionada;
     }
 
+    /// <summary>
+    /// Define o estado da célula como alternativa
+    /// </summary>
     public void Alternativa()
     {
-        _alternativa = !_alternativa;
-        _animacao = (_alternativa) ? (int)Animacao.Alternativa : (int)Animacao.Normal;
+        _alternativa = true;
+        _selecionada = false;
+        _estado = (int)Estado.Alternativa;
     }
 
-    /*private void OnTriggerEnter2D(Collider2D _collision)
-    {
-        if (_collision.CompareTag("Celula"))
-        {
-            _alternativa = true;
-            _animacao = (int)Animacao.Alternativa;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D _collision)
+    /// <summary>
+    /// Define o estado da célula como normal
+    /// </summary>
+    public void Normal()
     {
         _alternativa = false;
-        _animacao = (int)Animacao.Normal;
-    }*/
+        _selecionada = false;
+        _estado = (int)Estado.Normal;
+    }
 }
