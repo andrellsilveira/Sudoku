@@ -8,31 +8,36 @@ public class Controlador : MonoBehaviour
     private int _totalCelulasSelecionadas = 0;
     private GameObject[] _celulasSelecionadas;
     private GeradorSudoku _geradorSudoku;
+    private bool _jogar = true;
     #endregion
 
-    // Use this for initialization
     void Start()
     {
         _geradorSudoku = FindObjectOfType(typeof(GeradorSudoku)) as GeradorSudoku;
         _celulasSelecionadas = new GameObject[2];
     }
 
-    // Update is called once per frame
     void Update()
     {
-        // * Se o total de células selecionadas for menor que 2, então permite selecionar uma outra célula
-        if (_totalCelulasSelecionadas < 2)
+        if (_jogar)
         {
-            SelecionarCelula();
-        }
-        // * Se o total de células selecionadas for igual a 2, então executa a troca de valores entre elas
-        else
-        {
-            StartCoroutine(ExecutarTroca());
+            // * Se o total de células selecionadas for menor ou igual a 1, então permite selecionar uma outra célula durante a jogada
+            if (_totalCelulasSelecionadas <= 1)
+            {
+                ExecutarJogada();
+            }
+            // * Se o total de células selecionadas for igual a 2, então executa a troca de valores entre elas finalizando a jogada
+            else
+            {
+                StartCoroutine(FinalizarJogada());
+            }
         }
     }
 
-    void SelecionarCelula()
+    /// <summary>
+    /// Executa uma jogada selecionando as células para troca dos valores
+    /// </summary>
+    void ExecutarJogada()
     {
         RaycastHit2D _hit = new RaycastHit2D();
 
@@ -51,26 +56,26 @@ public class Controlador : MonoBehaviour
             {
                 // * Recupera a posição do toque
                 _hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position), Vector2.zero);
-            }            
+            }
         }
 #endif
 
         if (_hit)
         {
             if (_hit.collider.CompareTag("Celula"))
-            {                
-                Debug.Log("Selecionada célula " + _hit.transform.name);
+            {
+                //Debug.Log("Selecionada célula " + _hit.transform.name);
                 // * Recupera o componente script da célula para defini-la como selecionada
                 _hit.collider.gameObject.GetComponent<Celula>().Selecionada();
-                
+
                 // * Atribui a célula ao array de células selecionadas
                 _celulasSelecionadas[_totalCelulasSelecionadas] = _hit.collider.gameObject;
 
                 // * Incrementa o total de células selecionadas
                 _totalCelulasSelecionadas++;
 
-                // * Se o total de células selecionadas é menor que 2, então executa corotina para desabilitar as células que não podem ser escolhidas
-                if (_totalCelulasSelecionadas < 2)
+                // * Se o total de células selecionadas é menor ou igual a 1, então executa corotina para desabilitar as células que não podem ser escolhidas
+                if (_totalCelulasSelecionadas <= 1)
                     StartCoroutine(DesabilitarCelulas(_hit.collider.gameObject));
             }
         }
@@ -134,22 +139,29 @@ public class Controlador : MonoBehaviour
     }
 
     /// <summary>
-    /// Corotina para executar a troca dos números entre as células selecionadas após uma jogada
+    /// Corotina para executar a troca dos números e personagens entre as células selecionadas após uma jogada
     /// </summary>
     /// <returns>Espera de 1 segundo</returns>
-    IEnumerator ExecutarTroca()
+    IEnumerator FinalizarJogada()
     {
         /*for (int _indice = 0; _indice < _celulas.Length; _indice++)
         {
             _celulasSelecionadas[_indice].gameObject.GetComponent<Celula>().Normal();
         }*/
 
-        // * Executa corotina para habilitar todas as células
+        // * Não permite a próxima jogada até a conclusão da jogada em andamento
+        _jogar = false;
+
+        // * Executa corotina para habilitar todas as células após uma jogada
         StartCoroutine(HabilitarCelulas());
 
         // * Define o total de células selecionadas como zero
         _totalCelulasSelecionadas = 0;
 
+        // * Aguardar 1 segundo antes de permitir a próxima jogada
         yield return new WaitForSeconds(1f);
+
+        // * Permite a próxima jogada
+        _jogar = true;
     }
 }
