@@ -15,6 +15,9 @@ public class Celula : MonoBehaviour {
     public int Linha { get; set; }
     public int Coluna { get; set; }
     public int Numero { get; set; }
+
+
+    [SerializeField] int __teste;
     #endregion
 
     #region Variáveis Privadas
@@ -31,6 +34,8 @@ public class Celula : MonoBehaviour {
 	void Update () {
         // * Define a animação de estado para a célula
         _animator.SetInteger("_estado", _estado);
+
+        __teste = Numero;
 	}
 
     /// <summary>

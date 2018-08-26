@@ -7,13 +7,13 @@ public class GeradorSudoku : MonoBehaviour {
     #region Variáveis Públicas
     public readonly int TotalLinhas = 9;
     public readonly int TotalColunas = 9;
+    public GameObject[,] ListaCelulas { get; set; }
+    public int[,] Sudoku;
     [SerializeField] GameObject Celulas;
     [SerializeField] GameObject Celula;
-    public GameObject[,] ListaCelulas { get; set; }
     #endregion
 
     #region Variáveis Privadas
-    private int[,] _sudoku;
     private int[] _numeros;
     #endregion
 
@@ -35,22 +35,35 @@ public class GeradorSudoku : MonoBehaviour {
         GerarSudoku();
     }
 
+    void Update()
+    {
+        if (ValidarSudoku())
+        {
+            Debug.Log("Parabéns!!");
+        }
+        else
+        {
+            Debug.Log("Ainda não...");
+        }
+    }
+
     /// <summary>
     /// Executa as chamada aos métodos para inicialização e geração do jogo
     /// </summary>
     public void GerarSudoku()
     {
         // * Inicializa os arrays
-        _sudoku = new int[TotalLinhas, TotalColunas];
+        Sudoku = new int[TotalLinhas, TotalColunas];
         ListaCelulas = new GameObject[TotalLinhas, TotalColunas];
         _numeros = new int[TotalLinhas];
 
-        //_sudoku = TESTE;
+        Sudoku = TESTE;
 
         MapearTabuleiro();
-        IniciarNumeros();
+        /*IniciarNumeros();
         IniciarSudoku();
-        PopularSudoku();
+        PopularSudoku();*/
+        PreencherNumeroCelula();
         ImprimirSudoku();
     }
 
@@ -104,7 +117,7 @@ public class GeradorSudoku : MonoBehaviour {
         {
             for (int _coluna = 0; _coluna < TotalColunas; _coluna++)
             {
-                _sudoku[_linha, _coluna] = 0;
+                Sudoku[_linha, _coluna] = 0;
             }
         }        
     }
@@ -136,7 +149,7 @@ public class GeradorSudoku : MonoBehaviour {
 
                 for (int _coluna = 0; _coluna < TotalColunas; _coluna++)
                 {
-                    if (PreencherCelula(_linha, _coluna))
+                    if (DefinirNumeroCelula(_linha, _coluna))
                         _definidos++;
                 }
             }
@@ -148,7 +161,7 @@ public class GeradorSudoku : MonoBehaviour {
             }
         }
 
-        Randomizar(_sudoku);
+        Randomizar(Sudoku);
     }
 
     /// <summary>
@@ -161,7 +174,7 @@ public class GeradorSudoku : MonoBehaviour {
         {
             for (int _coluna = 0; _coluna < TotalColunas; _coluna++)
             {
-                if (ValidarLinha(_sudoku[_linha, _coluna], _linha, _coluna) || ValidarColuna(_sudoku[_linha, _coluna], _coluna, _linha) || ValidarQuadrante(_sudoku[_linha, _coluna], _linha, _coluna))
+                if (ValidarLinha(Sudoku[_linha, _coluna], _linha, _coluna) || ValidarColuna(Sudoku[_linha, _coluna], _coluna, _linha) || ValidarQuadrante(Sudoku[_linha, _coluna], _linha, _coluna))
                 {
                     return false;
                 }
@@ -172,24 +185,37 @@ public class GeradorSudoku : MonoBehaviour {
     }
 
     /// <summary>
-    /// Preencher as células com números aleatórios para formação do jogo 
+    /// Define um determinado número aleatório para a célula
     /// </summary>
     /// <param name="_linha">Número da linha da célula</param>
     /// <param name="_coluna">Número da coluna da célula</param>
-    bool PreencherCelula(int _linha, int _coluna)
+    bool DefinirNumeroCelula(int _linha, int _coluna)
     {
         for (int _indice = 0; _indice < _numeros.Length; _indice++)
         {
             if (!VerificarLinha(_numeros[_indice], _linha) && !VerificarColuna(_numeros[_indice], _coluna) && !VerificarQuadrante(_numeros[_indice], _linha, _coluna))
             {
-                _sudoku[_linha, _coluna] = _numeros[_indice];
-                ListaCelulas[_linha, _coluna].GetComponent<Celula>().Numero = _numeros[_indice];
+                Sudoku[_linha, _coluna] = _numeros[_indice];
                 return true;
             }
         }
 
         return false;
     }    
+
+    /// <summary>
+    /// Preenche cada célula com seu número correspondente após randomizado o tabuleiro
+    /// </summary>
+    void PreencherNumeroCelula()
+    {
+        for (int _linha = 0; _linha < TotalLinhas; _linha++)
+        {
+            for (int _coluna = 0; _coluna < TotalColunas; _coluna++)
+            {
+                ListaCelulas[_linha, _coluna].GetComponent<Celula>().Numero = Sudoku[_linha, _coluna];
+            }
+        }
+    }
 
     /// <summary>
     /// Verifica se o número já existe em determinada linha
@@ -201,7 +227,7 @@ public class GeradorSudoku : MonoBehaviour {
     {
         for (int _coluna = 0; _coluna < TotalColunas; _coluna++)
         {
-            if (_sudoku[_linha, _coluna] == _numero)
+            if (Sudoku[_linha, _coluna] == _numero)
             {
                 return true;
             }
@@ -220,7 +246,7 @@ public class GeradorSudoku : MonoBehaviour {
     {
         for (int _linha = 0; _linha < TotalLinhas; _linha++)
         {
-            if (_sudoku[_linha, _coluna] == _numero)
+            if (Sudoku[_linha, _coluna] == _numero)
             {
                 return true;
             }
@@ -247,7 +273,7 @@ public class GeradorSudoku : MonoBehaviour {
         {
             for (int _c = _colunaMinimo; _c <= _colunaMaximo; _c++)
             {
-                if (_sudoku[_l, _c] == _numero)
+                if (Sudoku[_l, _c] == _numero)
                 {
                     return true;
                 }
@@ -270,7 +296,7 @@ public class GeradorSudoku : MonoBehaviour {
         {
             if (_c != _coluna)
             {
-                if (_sudoku[_linha, _c] == _numero)
+                if (Sudoku[_linha, _c] == _numero)
                 {
                     return true;
                 }
@@ -293,7 +319,7 @@ public class GeradorSudoku : MonoBehaviour {
         {
             if (_l != _linha)
             {
-                if (_sudoku[_l, _coluna] == _numero)
+                if (Sudoku[_l, _coluna] == _numero)
                 {
                     return true;
                 }
@@ -323,7 +349,7 @@ public class GeradorSudoku : MonoBehaviour {
             {
                 if (_l != _linha && _c != _coluna)
                 {
-                    if (_sudoku[_l, _c] == _numero)
+                    if (Sudoku[_l, _c] == _numero)
                     {
                         return true;
                     }
@@ -337,7 +363,7 @@ public class GeradorSudoku : MonoBehaviour {
     /// <summary>
     /// Realiza a exibição dos números definidos para o jogo
     /// </summary>
-    void ImprimirSudoku()
+    public void ImprimirSudoku()
     {
         string sud = "";
         for (int _linha = 0; _linha < TotalLinhas; _linha++)
@@ -345,7 +371,7 @@ public class GeradorSudoku : MonoBehaviour {
             for (int _coluna = 0; _coluna < TotalColunas; _coluna++)
             {
                 if (_coluna != 0) sud += ";";
-                sud += _sudoku[_linha, _coluna];
+                sud += Sudoku[_linha, _coluna];
             }
             sud += "\n";
         }

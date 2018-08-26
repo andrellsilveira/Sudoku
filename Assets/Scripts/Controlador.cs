@@ -149,6 +149,19 @@ public class Controlador : MonoBehaviour
             _celulasSelecionadas[_indice].gameObject.GetComponent<Celula>().Normal();
         }*/
 
+        // * Alterna os números entre as células selecionadas
+        int _auxiliar = _celulasSelecionadas[0].GetComponent<Celula>().Numero;
+        _celulasSelecionadas[0].GetComponent<Celula>().Numero = _celulasSelecionadas[1].GetComponent<Celula>().Numero;
+        _celulasSelecionadas[1].GetComponent<Celula>().Numero = _auxiliar;
+
+        // * Alterna os números no tabuleiro
+        _geradorSudoku.Sudoku[_celulasSelecionadas[0].GetComponent<Celula>().Linha, _celulasSelecionadas[0].GetComponent<Celula>().Coluna] = _celulasSelecionadas[0].GetComponent<Celula>().Numero;
+        _geradorSudoku.Sudoku[_celulasSelecionadas[1].GetComponent<Celula>().Linha, _celulasSelecionadas[1].GetComponent<Celula>().Coluna] = _celulasSelecionadas[1].GetComponent<Celula>().Numero;
+
+
+        _geradorSudoku.ImprimirSudoku();
+
+
         // * Não permite a próxima jogada até a conclusão da jogada em andamento
         _jogar = false;
 
